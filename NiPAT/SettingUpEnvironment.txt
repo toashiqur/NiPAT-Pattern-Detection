@@ -1,0 +1,24 @@
+The NiPAT pattern detection tool was built and tested in Windows 8 environment.
+
+1.Install cygwin
+	a. select gcc c compiler from "devel"
+	b. Select "make" from "devel" during setup of cygwin
+
+2. Use txl for 64bit machine of cygwin
+	a. use home/your_username directory
+	b. using cygwin "mkdir" command make a txl directory there
+	c. copy the txl zip file in windows mode to there
+	d. now extract the zip file using cygwin "tar" command
+If everything is ok...it will run and test a txl program automatically..
+
+3. Now copy nicad in windows mode
+	a. goto "tools" folder inside nicad
+	b. open the "makefile" and set machinesize=m64
+	c. now using cygwin appy "make" command staying inside nicad folder
+	d. replace the "txl" folder inside NiCAD with the "txl" folder provided with NiPAT. This txl folder contain the necessary grammar and rule files to run NiPAT.
+
+4. Check setup by running: ./nicad3 (or the appropriate nicad version ./nicad5), if everything ok it will show nicad command parameters.
+
+5. Now you're all set to run NiPAT. You can run NiPAT.exe or the source code. If you run from source code then find_patterns.py is the starting file.
+
+* The txl folder distributed with NiPAT contains source files to run NiPAT. It's not the TXL program. The TXL program can be downloaded from https://www.txl.ca/txl-index.html.

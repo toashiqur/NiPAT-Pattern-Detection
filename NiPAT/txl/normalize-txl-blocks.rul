@@ -1,0 +1,313 @@
+% Generic blind renaming for potential clones
+% Jim Cordy, May 2010
+% Demo of truncating a sequence of identical alternatives-JRC, June 2015
+% Added- Moon, June 2015
+
+define xml_source_coordinate
+    '< [SPOFF] 'source [SP] 'file=[stringlit] [SP] 'startline=[stringlit] [SP] 'endline=[stringlit] '> [SPON] [NL]
+end define
+
+define end_xml_source_coordinate
+      '< [SPOFF] '/ 'source '> [SPON] [NL]
+	| [SPOFF] '</ 'source '> [SPON] [NL]
+end define
+
+define sourceUnit  
+    [xml_source_coordinate]
+        [potentialClone]
+    [end_xml_source_coordinate]
+end define
+
+redefine program
+    [repeat sourceUnit]
+end redefine
+
+% Main program
+
+rule main
+    skipping [sourceUnit]
+    replace $ [sourceUnit]
+	BeginXML [xml_source_coordinate]
+	    PC [potentialClone]
+	EndXML [end_xml_source_coordinate]
+    by
+	BeginXML 
+	    PC [renameShortQuestion]			    	% These are for repeaters - Moon
+		   [renameShortStar]
+		   [renameShortPlus]
+		   [renameShortComma]
+		   [renameShortCommaPlus]
+		   [renameShortColon]
+		   [renameShortTilde]
+		   [renameShortGreaterThan]
+		   [renameShortLessThan]
+		   
+		   [renameListToRepeat]		   
+		   
+		   [renameRedefineHeaderToDefine]
+		   [renameRedefineFooterToDefine]		   
+		   [renameFunctionHeaderToRule]
+		   [renameFunctionFooterToRule]
+
+		   
+		   %[removeDotFromRedefine]      % Not Approved by JRC
+		   [removeRuleParms]	
+		   [removeFuncParms]
+		   [removeConstructParms] 
+		   [removeDeConstructParms]
+		   
+		   
+		   [truncateDefineAndRedefine] 						% For Truncating Repeat Alternatives
+		   [truncateDotBarRedefine]
+		   [truncateBarDotRedefine]
+	EndXML 
+end rule
+
+rule renameShortQuestion
+    replace $ [typeSpec]
+        _[opt typeModifier] ID[typeid] '?
+    by
+	'opt ID
+end rule
+
+rule renameShortStar
+    replace $ [typeSpec]
+        _[opt typeModifier] ID[typeid] '*
+    by
+	'repeat ID
+end rule
+
+rule renameShortPlus
+    replace $ [typeSpec]
+        _[opt typeModifier] ID[typeid] '+
+    by
+	'repeat ID '+
+end rule
+
+rule renameShortComma
+    replace $ [typeSpec]
+        _[opt typeModifier] ID[typeid] ',
+    by
+	'list ID
+end rule
+
+rule renameShortCommaPlus
+    replace $ [typeSpec]
+        _[opt typeModifier] ID[typeid] ',+
+    by
+	'list ID '+
+end rule
+
+rule renameShortColon
+    replace $ [typeSpec]
+        ': ID[typeid] _[opt typeRepeater]
+    by
+	'see ID
+end rule
+
+rule renameShortTilde
+    replace $ [typeSpec]
+		'~ ID[typeid] _[opt typeRepeater]
+    by
+	'not ID
+end rule
+
+rule renameShortGreaterThan
+    replace $ [typeSpec]
+		'> ID[typeid] _[opt typeRepeater]
+    by
+	'push ID
+end rule
+
+rule renameShortLessThan
+    replace $ [typeSpec]
+		'< ID[typeid] _[opt typeRepeater]
+    by
+	'pop ID
+end rule
+
+rule renameListToRepeat
+    replace $ [typeModifier]
+		'list
+    by
+	'repeat
+end rule
+
+
+rule renameRedefineHeaderToDefine
+	replace $[blockHeader]
+	'redefine tid[typeid]
+by									
+	'define tid
+end rule
+
+rule renameRedefineFooterToDefine
+	replace $[blockFooter]
+	'end 'redefine
+by									
+	'end 'define
+end rule
+
+
+rule renameFunctionHeaderToRule
+	replace $[blockHeader]
+	'function ids[ruleid] args[repeat formalArgument]
+by									
+	'rule ids args
+end rule
+
+rule renameFunctionFooterToRule
+	replace $[blockFooter]
+	'end 'function
+by									
+	'end 'rule
+end rule
+
+
+rule removeDotFromRedefine
+	replace $[blockBody]
+		opDot[opt dotDotDotBar]
+		opQ[opt quote] litOrType[repeat literalOrType] 	 
+		barLitAndType[repeat barLiteralsAndTypes]
+		opDotDot[opt barDotDotDot]  
+by
+		opQ litOrType
+		barLitAndType
+end rule
+
+
+rule removeRuleParms
+	replace $[blockHeader]
+	'rule 'x _[repeat formalArgument] % 'rule 'x means it is blind normalized..
+by									% if a rule's name is x but it is not blind normalized then that will also be replaced during only block normalization.	
+	'rule 'x
+end rule
+
+rule removeFuncParms
+	replace $[blockHeader]
+	'function 'x _[repeat formalArgument] % 'function 'x means it is blind normalized..
+by									% if a rule's name is x but it is not blind normalized then that will also be replaced during only block normalization.	
+	'function 'x
+end rule
+
+rule removeConstructParms
+replace $[constructor]
+	'construct var[varid] ctype[type]
+		rep[replacement]
+	
+	deconstruct ctype
+	'[ _[opt typeModifier] tid[typeid] _[opt typeRepeater] ']
+	
+	by
+	'construct var '[tid']
+		rep
+end rule
+
+rule removeDeConstructParms
+	replace $[deconstructor]
+	opSkip[opt skippingType] 
+	'deconstruct _[opt 'not] _[opt '*] _[opt type] var[varid]
+		pat[pattern]
+	by
+	opSkip
+	'deconstruct var
+		pat
+end rule
+
+
+
+		
+
+% Truncating Functions
+function truncateDefineAndRedefine
+    replace [potentialClone]
+	Header[blockHeader]
+	%'' 'x
+	opQ[opt quote] topElement[literalOrType]
+	Alts [repeat barLiteralsAndTypes]
+	Footer[blockFooter]
+%	deconstruct topElement			% Ensure that it contains x
+%	'x
+    by
+	Header
+	%''x
+	opQ[addApostropheToTop topElement]			% Ensure a quote here
+	topElement
+	Alts [addApostropheToAlts][truncateAt3]
+	Footer
+end function
+
+rule addApostropheToTop topElement[literalOrType]
+	deconstruct not topElement
+	'[ _[typeSpec] ']		% if it is not a non-terminal then check the quote
+	
+	deconstruct not topElement
+	%empty					% If top element is not empty then check quote--sometimes it happes.
+	
+	replace [opt quote]
+		% no quote
+	by
+		''
+end rule
+
+rule addApostropheToAlts
+	replace [barLiteralsAndTypes]
+		'| unQuotedAlt[unquotedLiteral]
+	by
+		'| '' unQuotedAlt	% convert to quoted alter
+end rule
+
+rule truncateAt3
+    replace [repeat barLiteralsAndTypes]
+	Alt [barLiteralsAndTypes]
+       Alt % i.e., an identical one
+	TooManyAlts [repeat barLiteralsAndTypes+]  % the + means at least one
+    % make sure they are both the one we want
+    %deconstruct Alt
+    %   '| '' 'x
+    % make sure the rest are all the same
+    where not 
+	TooManyAlts [hasDifferent Alt]
+    by
+	Alt
+	Alt
+end rule
+
+function truncateDotBarRedefine
+    replace [potentialClone]
+	'redefine 'x
+	'... '|
+	opQ[opt quote] topElement[literalOrType]
+	Alts [repeat barLiteralsAndTypes]
+	'end 'redefine
+    by
+	'redefine 'x
+	'... '|
+	opQ[addApostropheToTop topElement]			% Ensure a quote here
+	topElement
+	Alts [addApostropheToAlts][truncateAt3]
+	'end 'redefine
+end function
+
+function truncateBarDotRedefine
+    replace [potentialClone]
+	'redefine 'x
+	opQ[opt quote] topElement[literalOrType]
+	Alts [repeat barLiteralsAndTypes]
+	'|' ...
+	'end 'redefine
+    by
+	'redefine 'x
+	opQ[addApostropheToTop topElement]			% Ensure a quote here
+	topElement
+	Alts [addApostropheToAlts][truncateAt3]
+	'|' ...
+	'end 'redefine
+end function
+
+function hasDifferent Alt[barLiteralsAndTypes]
+    match * [barLiteralsAndTypes]
+	Y [barLiteralsAndTypes]
+    deconstruct not Y
+	Alt
+end function
