@@ -1,37 +1,7 @@
-## Welcome to GitHub Pages
+# NiPAT- A Program Pattern Detection Tool
 
-You can use the [editor on GitHub](https://github.com/toashiqur/NiPAT-Pattern-Detection/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+All programming languages need to be updated regularly by adding new features that fill programming needs. Existing approaches to determine new language features are completely manual and are based on language developers' experience, source code analysis, feature requests, and programmer interviews. Although these are acceptable practises, they are time-consuming and require a lot of brainstorming tasks, such as preparing interview questions, understanding ambiguous ideas, finding the common requirements, etc. No research, to our knowledge, has attempted to make the task of language feature identification easier. Through our research, we propose a systematic approach for identifying language features with the help of pattern and clone detection tools that work on source code. It semi-automates the task of feature identification, works quickly, and reduces the effort involved in existing practises. We identify features for the TXL language by implementing our idea and enabling the NiCAD clone detector to perform clone analysis on TXL source code, and developing a pattern detector. After detecting code patterns with the pattern detector and analyzing them, we propose eleven new features that can help improve the feature set of TXL.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+The report on NiPAT can be downloaded from [Pattern analysis of TXL programs](https://ieeexplore.ieee.org/abstract/document/7476794/)
 
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/toashiqur/NiPAT-Pattern-Detection/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+Tools: Python, XML, HTML, [TXL](https://www.txl.ca/txl-index.html), [NiCAD](https://www.txl.ca/txl-nicaddownload.html)
