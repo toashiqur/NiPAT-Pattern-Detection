@@ -1,0 +1,19 @@
+1.Install cygwin
+	a. select gcc c compiler from "devel"
+	b. Select "make" from "devel" during setup of cygwin
+
+2. Use txl for 64bit machine of cygwin
+	a. use home/your_username directory
+	b. using cygwin "mkdir" command make a txl directory there
+	c. copy the txl zip file in windows mode to there
+	d. now extract the zip file using cygwin "tar" command
+If everything is ok...it will run and test a txl program automatically..
+
+3. Now copy nicad in windows mode
+	a. goto "tools" folder inside nicad
+	b. open the "makefile" and set machinesize=m64
+	c. now using cygwin appy "make" command staying inside nicad folder
+
+4. Check setup by running: ./nicad3, if everything ok it will show nicad command parameters.
+
+5. Now you're all set to run NiPAT
