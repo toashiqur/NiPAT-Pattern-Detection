@@ -1,3 +1,5 @@
+The NiPAT pattern detection tool was built and tested in Windows 8 environment.
+
 1.Install cygwin
 	a. select gcc c compiler from "devel"
 	b. Select "make" from "devel" during setup of cygwin
